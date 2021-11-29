@@ -10,8 +10,8 @@ public class GraphNode {
     private String info;
     private boolean visited;
     private boolean marked;
-    private ArrayList<GraphNode> boolValue;
-    private ArrayList<GraphNode> cptValue;
+    private ArrayList<String> boolValue;
+    private ArrayList<Double> cptValue;
 
     // GraphNode constructor
     public GraphNode(String info) {
@@ -28,8 +28,12 @@ public class GraphNode {
      * @return
      */
 
-
-
+    public void addCptValue(double v){
+        cptValue.add(v);
+    }
+    public void addBoolValue(String value){
+        boolValue.add(value);
+    }
     public boolean isMarked() {
         return marked;
     }
