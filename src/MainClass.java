@@ -1,35 +1,82 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Scanner;
 
 public class MainClass {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
+        String alarm_path = "C:\\Users\\arieh\\IdeaProjects\\algo_for_AI\\src\\Ex1\\alarm_net.xml";
+        String big_net_path = "C:\\Users\\arieh\\IdeaProjects\\algo_for_AI\\src\\Ex1\\big_net.xml";
+        String input_file = "C:\\Users\\arieh\\IdeaProjects\\algo_for_AI\\src\\Ex1\\input.txt";
+        HashMap<String, GraphNode> map = (HashMap<String, GraphNode>) xmlReader.convertToGraph(alarm_path).clone();
+//        fromInput(input_file, map);
+        for(String i : map.keySet()){
+            System.out.println(map.get(i));
+        }
+        map.get("A").createFactor();
 
-        GraphNode b = new GraphNode("B");
-        GraphNode e = new GraphNode("E");
-        GraphNode a = new GraphNode("A");
-        GraphNode m = new GraphNode("M");
-        GraphNode j = new GraphNode("J");
+        map.get("A").getFactor().print();
+//        System.out.println(isDependent(map.get("B"), map.get("E")));
+//        GraphNode b = new GraphNode("B");
+//        GraphNode e = new GraphNode("E");
+//        GraphNode a = new GraphNode("A");
+//        GraphNode m = new GraphNode("M");
+//        GraphNode j = new GraphNode("J");
+//
+//        b.addChild(a);
+//        a.addParent(e);
+//        e.addChild(a);
+//        a.addParent(b);
+//        a.addChild(m);
+//        m.addParent(a);
+//        a.addChild(j);
+//        j.addParent(a);
+//        a.setMarked(true);
 
-        b.addChild(a);
-        a.addParent(e);
-        e.addChild(a);
-        a.addParent(b);
-        a.addChild(m);
-        m.addParent(a);
-        a.addChild(j);
-        j.addParent(a);
-        a.setMarked(true);
-
-        System.out.println(isDependent(m, j));
+       // printCombination(3);
     }
 
     //
+
+
+
+
+
+    public static void fromInput(String file,HashMap<String, GraphNode> map ) throws FileNotFoundException {
+        File text = new File(file);
+
+        Scanner s = new Scanner(text);
+
+        String line = s.nextLine();
+
+        while(s.hasNextLine()){
+            line = s.nextLine();
+            if(line.contains("P")){
+                break;
+            }
+            else{
+                if(line.length()>4){
+                    for(int i = 4; i<line.length(); i+=4){
+                        if(line.charAt(i+2) == 'T')
+                            map.get(""+line.charAt(i)).setMarked(true);
+                        map.get(""+line.charAt(i)).setMarked(false);
+                    }
+
+                }
+                System.out.println(isDependent(map.get(""+line.charAt(0)),map.get(""+line.charAt(2))));
+            }
+
+        }
+        for(String i : map.keySet())
+            System.out.println(map.get(i));
+    }
 
     /**
      * This is the algorithm I am using to scan the graph and see if there are
      * any dependencies between two nodes, I am using bfs to scan the graph.
      */
-
     public static boolean isDependent(GraphNode a, GraphNode b) {
         Queue<GraphNode> q = new LinkedList<GraphNode>();
         q.add(a);
