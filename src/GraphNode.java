@@ -12,6 +12,7 @@ public class GraphNode {
     private boolean marked;
     private ArrayList<String> boolValue;
     private ArrayList<Double> cptValue;
+    private Factor factor;
 
     // GraphNode constructor
     public GraphNode(String info) {
@@ -21,13 +22,70 @@ public class GraphNode {
         boolValue = new ArrayList<>();
         this.info = info;
         marked = false;
+        factor=new Factor();
     }
+
+
 
     /**
      * the rest of the function are all getters and setters for the class variables
      * @return
      */
 
+    public Factor getFactor() {
+        return factor;
+    }
+
+
+    public void createFactor(){
+        for(int i=0;i<parents.size()+2;i++){
+            factor.getTable().add(new ArrayList<String>());
+        }
+        if(parents.size()==0){
+            factor.getTable().get(0).add("T");
+            factor.getTable().get(0).add("F");
+            factor.getTable().get(1).add(cptValue.get(0).toString());
+            factor.getTable().get(1).add(cptValue.get(1).toString());
+        }else{
+            //int numOfOptions=(int)Math.pow(2, parents.size()+1);
+            boolean[][] all=getCombination(parents.size()+1);
+            for(int i=0;i<all.length;i++){
+                int cols=all[0].length;
+                for(int j=0;j<all[0].length;j++){
+                    factor.getTable().get(j).add(all[i][j]?"T":"F");
+                }
+            }
+        }
+        for (Double aDouble : cptValue) {
+            factor.getTable().get(parents.size() + 1).add(aDouble.toString());
+        }
+    }
+
+    private  boolean[][] getCombination(int num) {
+        boolean[][] result = new boolean[(int) Math.pow(2, num)][num];
+
+        int permuteLen = (int) Math.pow(2, num);
+        boolean b[] = new boolean[num];
+        for (int i = 0; i < b.length; i++)
+            b[i] = true;
+
+        for (int j = 0; j < permuteLen; j++) {
+            for (int i = 0; i < num; i++){
+                result[j][i]=b[i];
+            }
+               // System.out.print("  " + b[i] + "  ");
+          //  System.out.println(" ");
+
+            for (int i = num - 1; i >= 0; i--) {
+                if (b[i] == true) {
+                    b[i] = false;
+                    break;
+                } else
+                    b[i] = true;
+            }
+        }
+        return result;
+    }
     public void addCptValue(double v){
         cptValue.add(v);
     }
