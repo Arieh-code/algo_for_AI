@@ -72,8 +72,6 @@ public class xmlReader {
 
     /**
      * function to add cpt value to arraylist in node
-     * @param temp
-     * @param xml_line
      */
     private static void addCptTable(GraphNode temp, String xml_line) {
         xml_line = xml_line.replace("\t", "");
@@ -87,9 +85,6 @@ public class xmlReader {
 
     /**
      * function to remove all things that I don't need in a line
-     * @param line
-     * @param header
-     * @return
      */
     public static String removeLine(String line, String header){
         line = line.replace("\t", "");
