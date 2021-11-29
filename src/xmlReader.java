@@ -28,10 +28,11 @@ public class xmlReader {
                 // adding node to hashmap
                 graph.put(temp, curr);
                 // adding the boolean values until we reach the word Variable again
-                while(!xml_line.contains("VARIABLE")){
-                    xml_line = scnr.nextLine();
+                xml_line = scnr.nextLine();
+                while(!xml_line.contains("/VARIABLE")){
                     temp = removeLine(xml_line, "OUTCOME");
                     curr.addBoolValue(temp);
+                    xml_line = scnr.nextLine();
                 }
             }
             // taking care of the DEFINITION now
@@ -58,13 +59,22 @@ public class xmlReader {
                         xml_line = scnr.nextLine();
                     }
                 }
+                // calling the addcpt function
                 addCptTable(temp, xml_line);
+                // going down a line
+                xml_line = scnr.nextLine();
             }
-            scnr.nextLine();
+            // going down a line
+            xml_line = scnr.nextLine();
         }
         return graph;
     }
 
+    /**
+     * function to add cpt value to arraylist in node
+     * @param temp
+     * @param xml_line
+     */
     private static void addCptTable(GraphNode temp, String xml_line) {
         xml_line = xml_line.replace("\t", "");
         xml_line = xml_line.replace("<TABLE>", "");
@@ -75,6 +85,12 @@ public class xmlReader {
         }
     }
 
+    /**
+     * function to remove all things that I don't need in a line
+     * @param line
+     * @param header
+     * @return
+     */
     public static String removeLine(String line, String header){
         line = line.replace("\t", "");
         line = line.replace("<"+header+">", "");
