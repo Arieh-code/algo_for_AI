@@ -12,12 +12,33 @@ public class MainClass {
         String input_file = "C:\\Users\\arieh\\IdeaProjects\\algo_for_AI\\src\\Ex1\\input.txt";
         HashMap<String, GraphNode> map = (HashMap<String, GraphNode>) xmlReader.convertToGraph(alarm_path).clone();
 //        fromInput(input_file, map);
-        for(String i : map.keySet()){
-            System.out.println(map.get(i));
-        }
-        map.get("A").createFactor();
 
-        map.get("A").getFactor().print();
+        map.get("A").createFactor();
+        map.get("E").createFactor();
+        map.get("B").createFactor();
+        map.get("J").createFactor();
+        map.get("M").createFactor();
+        map.get("J").getFactor().print();
+        System.out.println();
+        map.get("J").setHidden(false);
+        map.get("J").setMarked(true);
+        map.get("J").updateFactor();
+        map.get("J").getFactor().print();
+
+//        for(String i : map.keySet()){
+//            System.out.println(map.get(i));
+//        }
+
+
+//        map.get("B").getFactor().print();
+//        System.out.println();
+//        map.get("E").getFactor().print();
+//        System.out.println();
+//        map.get("J").getFactor().print();
+//        System.out.println();
+//        map.get("M").getFactor().print();
+//        System.out.println();
+//        map.get("A").getFactor().print();
 //        System.out.println(isDependent(map.get("B"), map.get("E")));
 //        GraphNode b = new GraphNode("B");
 //        GraphNode e = new GraphNode("E");
