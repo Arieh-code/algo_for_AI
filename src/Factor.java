@@ -21,9 +21,56 @@ public class Factor {
         createFactor(gn);
     }
 
-    public Factor(){
+    public Factor(String info, int sum){
+        this.info = makeNewHeader(info);
+        this.ASCII_val = sum;
+        this.headerList = makenew_headerList(this.info);
+        this.table = new ArrayList<ArrayList<String>>();
+        createNewFactor(info);
+    }
+
+    public void createNewFactor(String info){
+        for(int i=0;i<info.length()+1;i++){
+            this.table.add(new ArrayList<String>());
+        }
+        boolean[][] all=getCombination(info.length());
+        for (boolean[] booleans : all) {
+            int cols = all[0].length;
+            for (int j = 0; j < all[0].length; j++) {
+                this.table.get(j).add(booleans[j] ? "T" : "F");
+            }
+        }
+        for(int i = 0; i<Math.pow(2,info.length()); i++){
+            this.table.get(this.table.size() - 1).add("-");
+        }
+        // adding the header to the graph
+        for(int i = 0; i<this.headerList.size(); i++){
+            this.table.get(i).add(0,this.headerList.get(i));
+        }
 
     }
+
+    public static String makeNewHeader(String info){
+        StringBuilder title = new StringBuilder("f(");
+        for(int i = 0; i<info.length();i++){
+            title.append(info.charAt(i)).append(",");
+        }
+        title = new StringBuilder(title.substring(0, title.length()-1));
+        title.append(")");
+        return title.toString();
+    }
+
+    public static ArrayList<String> makenew_headerList(String info){
+        ArrayList<String> ans = new ArrayList<>();
+        info = info.replace("f(", "");
+        info = info.replace(")", "");
+        String []sarr = info.split(",");
+        Collections.addAll(ans, sarr);
+        ans.add("P(..)");
+        return ans;
+    }
+
+
 
     // generating the ascii value for each factor
     public int asciiValue(GraphNode gn) {
@@ -258,15 +305,20 @@ public class Factor {
         HashMap<String, GraphNode> map = (HashMap<String, GraphNode>) xmlReader.convertToGraph(alarm_path).clone();
         ArrayList<Factor> tests = new ArrayList<>();
 
-        int counter = 1;
-        for (GraphNode gn : map.values()){
-            Factor a = new Factor(gn);
-            a.setInfo(a.getInfo().substring(0,1)+counter+a.getInfo().substring(1));
-            tests.add(a);
-            counter ++;
-        }
+//        int counter = 1;
+//        for (GraphNode gn : map.values()){
+//            Factor a = new Factor(gn);
+//            a.setInfo(a.getInfo().substring(0,1)+counter+a.getInfo().substring(1));
+//            tests.add(a);
+//            counter ++;
+//        }
 
-        System.out.println(tests);
+//        System.out.println(tests);
+        Factor t = new Factor("ABCD", 100);
+        System.out.println(t);
+//        String test = makeNewHeader("ABCD");
+//        ArrayList<String> s = makenew_headerList("A,B,C,D");
+//        System.out.println(s);
 //        map.get("J").setMarked(true);
 //        map.get("J").setHidden(false);
 
