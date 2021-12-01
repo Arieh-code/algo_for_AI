@@ -9,6 +9,7 @@ public class Factor {
     private String info;
     private ArrayList<String> headerList;
     private int ASCII_val;
+    private String factor_num;
 
 
     public Factor(GraphNode gn) {
@@ -18,6 +19,10 @@ public class Factor {
         this.headerList = make_headerList(gn, this.info);
         this.table = new ArrayList<ArrayList<String>>();
         createFactor(gn);
+    }
+
+    public Factor(){
+
     }
 
     // generating the ascii value for each factor
@@ -153,7 +158,7 @@ public class Factor {
 
 
     // function that sorts all the permutations over the True False combinations
-    private  boolean[][] getCombination(int num) {
+    public  boolean[][] getCombination(int num) {
         // rows is the size of the different combinations and columns is the size of different variables
         boolean[][] result = new boolean[(int) Math.pow(2, num)][num];
 
@@ -175,6 +180,13 @@ public class Factor {
         return result;
     }
 
+    public String getFactor_num() {
+        return factor_num;
+    }
+
+    public void setFactor_num(String factor_num) {
+        this.factor_num = factor_num;
+    }
 
     public String getInfo() {
         return info;
@@ -227,7 +239,7 @@ public class Factor {
     }
 
     public String toString() {
-        StringBuilder ans = new StringBuilder("ID: "+this.info+"\n");
+        StringBuilder ans = new StringBuilder(""+this.info+"\n");
         ans.append("ASCII SUM: ").append(this.ASCII_val).append("\nFactor:\n| ");
         for(int i=0; i<this.table.get(0).size(); i++){
             for (ArrayList<String> strings : table)
@@ -237,9 +249,7 @@ public class Factor {
         return ans.substring(0, ans.length()-2);
     }
 
-    public void joinFactor(Factor a, Factor b){
 
-    }
 
     public static void main(String[] args) throws FileNotFoundException {
         String alarm_path = "C:\\Users\\arieh\\IdeaProjects\\algo_for_AI\\src\\Ex1\\alarm_net.xml";
@@ -248,25 +258,28 @@ public class Factor {
         HashMap<String, GraphNode> map = (HashMap<String, GraphNode>) xmlReader.convertToGraph(alarm_path).clone();
         ArrayList<Factor> tests = new ArrayList<>();
 
-//        int counter = 1;
-//        for (GraphNode gn : map.values()){
-//            Factor a = new Factor(gn);
-//            a.setInfo(a.getInfo().substring(0,1)+counter+a.getInfo().substring(1));
-//            tests.add(a);
-//            counter ++;
-//        }
+        int counter = 1;
+        for (GraphNode gn : map.values()){
+            Factor a = new Factor(gn);
+            a.setInfo(a.getInfo().substring(0,1)+counter+a.getInfo().substring(1));
+            tests.add(a);
+            counter ++;
+        }
+
+        System.out.println(tests);
 //        map.get("J").setMarked(true);
 //        map.get("J").setHidden(false);
-        System.out.println(map.get("M"));
-        Factor a = new Factor(map.get("M"));
-        System.out.println();
-        System.out.println(a);
-        map.get("M").setMarked(true);
-        map.get("M").setHidden(false);
-        System.out.println();
-        System.out.println(map.get("M"));
-        Factor b = new Factor(map.get("M"));
-        System.out.println(b);
+
+//        System.out.println(map.get("M"));
+//        Factor a = new Factor(map.get("M"));
+//        System.out.println();
+//        System.out.println(a);
+//        map.get("M").setMarked(false);
+//        map.get("M").setHidden(false);
+//        System.out.println();
+//        System.out.println(map.get("M"));
+//        Factor b = new Factor(map.get("M"));
+//        System.out.println(b);
 
 //        char a = map.get("A").getInfo().getChars(0,1);
 //        System.out.println(tests);
