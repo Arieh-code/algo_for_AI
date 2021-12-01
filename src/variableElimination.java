@@ -1,9 +1,6 @@
 import java.io.FileNotFoundException;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 
 public class variableElimination {
     private ArrayList<Factor> hidden;
@@ -34,9 +31,10 @@ public class variableElimination {
             for (int k = 0; k < factor_list.size(); k++) {
                 if (factor_list.get(k).getInfo().contains(ch + "")) {
                     Factor current = factor_list.get(k);
+                    factor_list.remove(k);
                     if (prev != null) {
-
                         prev = join(prev, current);
+                        factor_list.add(prev);
                     } else {
                         prev = current;
                     }
@@ -48,8 +46,7 @@ public class variableElimination {
         }
         return prev;
     }
-
-    private Factor join(Factor a, Factor b) {
+    public Factor join(Factor a, Factor b) {
         HashSet unique_headers = new HashSet();
         for (int i = 0; i < a.getHeaderList().size() - 1; i++) {
             unique_headers.add(a.getHeaderList().get(i));
@@ -57,28 +54,116 @@ public class variableElimination {
         for (int i = 0; i < b.getHeaderList().size() - 1; i++) {
             unique_headers.add(b.getHeaderList().get(i));
         }
-        boolean[][] permutations = a.getCombination(unique_headers.size());
-        for(int i=0;i<permutations.length;i++){
-            for(int j=0;j<permutations[0].length;j++){
+        int x = 0;
+        StringBuilder temp = new StringBuilder();
+        for (Object unique_header : unique_headers) {
+            String iters = unique_header.toString();
+            x += iters.charAt(0);
+            temp.append(iters);
+        }
 
+        Factor f = new Factor(temp + "", x);
+
+        // loop for each row - 1
+        for(int rows = 1; rows<f.getTable().get(0).size(); rows++){
+            String v = "";
+            String p = "";
+            // create arraylist copy of the factors and make changes on them
+            ArrayList<ArrayList<String>> copya = new ArrayList<>();
+            for(int cola = 0; cola<a.getTable().size(); cola++){
+                copya.add(new ArrayList<String>());
+                copya.get(cola).addAll(a.getTable().get(cola));
+            }
+            ArrayList<ArrayList<String>> copyb = new ArrayList<>();
+            for(int colb = 0; colb<b.getTable().size(); colb++){
+                copyb.add(new ArrayList<String>());
+                copyb.get(colb).addAll(b.getTable().get(colb));
+            }
+            // loop on cols
+            for(int cols = 0; cols<f.getTable().size()-1; cols++) {
+                v = f.getTable().get(cols).get(0);
+                p = f.getTable().get(cols).get(rows);
+                for (int i = 0; i < copya.size() - 1; i++) {
+                    if (copya.get(i).get(0).equals(v)) {
+                        for (int j = 1; j < copya.get(i).size(); j++) {
+                            if (!copya.get(i).get(j).equals(p)) {
+                                for (int k = 0; k < copya.size(); k++) {
+                                    copya.get(k).remove(j);
+                                }
+                                if(j == 0){
+                                    j = 0;
+                                }
+                                j--;
+                            }
+                        }
+                    }
+
+                }
+                for (int i = 0; i < copyb.size() - 1; i++) {
+                    if (copyb.get(i).get(0).equals(v)) {
+                        for (int j = 1; j < copyb.get(i).size(); j++) {
+                            if (!copyb.get(i).get(j).equals(p)) {
+                                for (int k = 0; k < copyb.size(); k++) {
+                                    copyb.get(k).remove(j);
+                                }
+                                if(j == 0){
+                                    j = 0;
+                                }
+                                j--;
+                            }
+                        }
+                    }
+
+                }
+            }
+            if(copya.get(0).size()>=2 && copyb.get(0).size()>=2) {
+                String suma = copya.get(copya.size() - 1).get(1);
+                String sumb = copyb.get(copyb.size() - 1).get(1);
+                double totalsum = Double.parseDouble(suma) * Double.parseDouble(sumb);
+                this.mul++;
+                f.getTable().get(f.getTable().size() - 1).set(rows, totalsum + "");
+            }
+        }
+        removeEmpty(f);
+        return f;
+    }
+
+    public void removeEmpty(Factor f){
+        for(int i = 1; i<f.getTable().get(f.getTable().size()-1).size();i++){
+            if(Objects.equals(f.getTable().get((f.getTable().size() - 1)).get(i), "-")){
+                for(int j = 0; j<f.getTable().size(); j++){
+                    f.getTable().get(j).remove(i);
+                }
+                i--;
             }
         }
     }
 
+
+
+
     // this functions removes booleans that we don't need int factor
     public void removeBool(){
+        // first get the question
         String temp = this.qs;
+        // find the variables in the question
         int x = temp.indexOf(')');
         int y = temp.indexOf('|')+1;
         temp = temp.substring(y, x);
+        // send variables into array
         String []arr = temp.split(",");
+        // for loop on array variables
         for (String s : arr){
             String b = s.charAt(2)+"";
             String v = s.charAt(0)+"";
+            // for loop on factor list
             for(Factor f : this.factor_list){
+                // check if the factor contains your variable
                 if(f.getInfo().contains(v)){
+                    // find the row that represents your variable
                     int row = f.getHeaderList().indexOf(v);
                     for(int i = 1; i<f.getTable().get(row).size(); i++){
+                        // if the bool is not the same as the evidence remove it
                         if(!Objects.equals(f.getTable().get(row).get(i), b)){
                             for(int j = 0; j<f.getTable().size(); j++){
                                 f.getTable().get(j).remove(i);
@@ -90,8 +175,6 @@ public class variableElimination {
                 }
             }
         }
-
-
 
     }
 
@@ -372,29 +455,35 @@ public class variableElimination {
         String b = "P(B=T|J=T,M=T) E-A";
         String c = "P(J=T|B=T) A-E-M";
         String d = "P(J=T|B=T) M-E-A";
-        variableElimination test = new variableElimination(map, d);
+        variableElimination test = new variableElimination(map, a);
                 for(String i : map.keySet()){
             System.out.println(map.get(i));
         }
-
-
-//        System.out.println(map);
-        test.removeIrel(map);
-        System.out.println(test.getFactor_list());
+        System.out.println(test.getHidden());
         System.out.println();
+        test.removeIrel(map);
         test.removeBool();
         System.out.println(test.getFactor_list());
-//        System.out.println();
-//        System.out.println(test.getQ());
+//        ArrayList<String>s = new ArrayList<>();
+//                s.add("a");
+//                s.add("b");
+//        System.out.println(s.toString());
+//        s.set(0, "-");
+//        System.out.println(s.toString());
+//        test.removeIrel(map);
+//        test.removeBool();
+//        Factor temp = test.join(test.factor_list.get(1), test.factor_list.get(2));
+//        System.out.println(temp);
+//        System.out.println(map);
 
-//        System.out.println(test.getQ().getInfo().indexOf(')'));
+//        System.out.println(test.getFactor_list());
+//        System.out.println(test.getFactor_list());
 //        System.out.println();
-//        System.out.println(test.getHidden());
-//        System.out.println();
-//        System.out.println(test.getMarked_list());
-//        System.out.println();
-//        System.out.println(test.getQ());
-//        Factor m = new Factor(map.get("M"));
-//        System.out.println(m);
+//        for(int i = 0; i<test.getFactor_list().get(0).getHeaderList().size()-1; i++) {
+//            System.out.println(test.getFactor_list().get(0).getHeaderList().get(i));
+//        }
+
+
+
     }
 }
