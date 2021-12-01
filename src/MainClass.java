@@ -13,17 +13,17 @@ public class MainClass {
         HashMap<String, GraphNode> map = (HashMap<String, GraphNode>) xmlReader.convertToGraph(alarm_path).clone();
 //        fromInput(input_file, map);
 
-        map.get("A").createFactor();
-        map.get("E").createFactor();
-        map.get("B").createFactor();
-        map.get("J").createFactor();
-        map.get("M").createFactor();
-        map.get("J").getFactor().print();
-        System.out.println();
-        map.get("J").setHidden(false);
-        map.get("J").setMarked(true);
-        map.get("J").updateFactor();
-        map.get("J").getFactor().print();
+//        map.get("A").createFactor();
+//        map.get("E").createFactor();
+//        map.get("B").createFactor();
+//        map.get("J").createFactor();
+//        map.get("M").createFactor();
+//        map.get("J").getFactor().print();
+//        System.out.println();
+//        map.get("J").setHidden(false);
+//        map.get("J").setMarked(true);
+//        map.get("J").updateFactor();
+//        map.get("J").getFactor().print();
 
 //        for(String i : map.keySet()){
 //            System.out.println(map.get(i));
@@ -108,7 +108,7 @@ public class MainClass {
             GraphNode gn = q.remove();
             if (gn.getInfo().equals(b.getInfo())) {
                 // we have found the right node return true
-                return true;
+                return false;
             }
             if (!gn.isMarked() && !flag) {
                 for (int i = 0; i < gn.getChildrens().size(); i++) {
@@ -129,7 +129,7 @@ public class MainClass {
 
         }
         // the nodes are not connected return false
-        return false;
+        return true;
     }
     /* what happens when compare M and J?? This needs to be fixed if A is Marked then
     M and J are dependant, and if A is not marked then they are independent
