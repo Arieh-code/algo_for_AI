@@ -24,17 +24,20 @@ public class variableElimination {
     /**
      * this is the join function for two factors
      */
-    public Factor joinAll() {
-        Factor prev = null;
-        for (int i = 0; i < hidden.size(); i++) {
-            char ch = hidden.get(i).getTable().get(hidden.get(i).getTable().size() - 2).get(0).charAt(0);
+    public void joinAll() {
+        for (Factor factor : hidden) {
+            Factor prev = null;
+            char ch = factor.getTable().get(factor.getTable().size() - 2).get(0).charAt(0);
+            //int size=factor_list.size();
             for (int k = 0; k < factor_list.size(); k++) {
                 if (factor_list.get(k).getInfo().contains(ch + "")) {
                     Factor current = factor_list.get(k);
                     factor_list.remove(k);
+                    k--;
                     if (prev != null) {
                         prev = join(prev, current);
-                        factor_list.add(prev);
+                        // factor_list.add(prev);
+                        // prev = null;
                     } else {
                         prev = current;
                     }
@@ -43,9 +46,93 @@ public class variableElimination {
 
             }
 
+                eliminate(prev, ch);
+                factor_list.add(prev);
+                System.out.println("test: " + this.factor_list);
+//            factor_list.add(prev);
+//            factor_list.add(prev);
+
+//
         }
-        return prev;
     }
+
+    private void eliminate(Factor prev, char ch) {
+//        System.out.println(this.getFactor_list());
+        ArrayList<String> map = new ArrayList<>();
+        for (int i = 0; i < prev.getTable().size(); i++) {
+            if (Objects.equals(prev.getTable().get(i).get(0), ch + "")) {
+                System.out.println("removed: " + ch);
+                prev.getTable().remove(i);
+            }
+        }
+        for(int i = 1; i<prev.getTable().get(0).size(); i++){
+            String temp = "";
+            for(int j = 0; j<prev.getTable().size()-1; j++){
+                temp += prev.getTable().get(j).get(i);
+            }
+            map.add(temp);
+        }
+        for(int i = 0; i<map.size(); i++){
+            for(int j = i+1; j<map.size(); j++){
+                if(map.get(i).equals(map.get(j))){
+                    double x = Double.parseDouble(prev.getTable().get(prev.getTable().size()-1).get(i+1));
+                    double y = Double.parseDouble(prev.getTable().get(prev.getTable().size()-1).get(j+1));
+                    double ans = x+y;
+                    this.add++;
+                    prev.getTable().get(prev.getTable().size()-1).set(i+1,ans+"");
+                    removerow(prev, j+1);
+                    map.remove(j);
+                }
+
+            }
+        }
+        int c = prev.getInfo().indexOf(ch);
+        prev.setInfo(prev.getInfo().substring(0,c)+prev.getInfo().substring(c+2));
+        for(int i = 0; i<prev.getHeaderList().size(); i++){
+            if(Objects.equals(prev.getHeaderList().get(i), ch + "")){
+                prev.getHeaderList().remove(i);
+            }
+        }
+    }
+
+    public void removerow(Factor f, int pos){
+        for(int i = 0; i < f.getTable().size(); i++){
+            f.getTable().get(i).remove(pos);
+        }
+    }
+
+//                for (int j = 1; j < size2; j++) {
+//                    String temp = "";
+//                    for (int k = 0; k < size; k++) {
+//                        temp += prev.getTable().get(k).get(j);
+//                    }
+//                    for (int l = j + 1; l < size2; l++) {
+//                        String temp1 = "";
+//                        for (int k = 0; k < prev.getTable().size() - 1; k++) {
+//                            temp1 += prev.getTable().get(k).get(l);
+//                        }
+//                        if (temp1.equals(temp)) {
+//                            double x = Double.parseDouble(prev.getTable().get(prev.getTable().size() - 1).get(l));
+//                            double y = Double.parseDouble(prev.getTable().get(prev.getTable().size() - 1).get(j));
+//                            double add = x + y;
+//                            prev.getTable().get(prev.getTable().size() - 1).set(l, x + y + "");
+//                            this.add++;
+//                            for (int col = 0; col < size + 1; col++) {
+//                                prev.getTable().get(col).remove(l);
+//                            }
+//
+//
+//                        }
+//                    }
+//
+//                }
+//            }
+//
+//        }
+//        this.factor_list.add(prev);
+//
+//    }
+
     public Factor join(Factor a, Factor b) {
         HashSet unique_headers = new HashSet();
         for (int i = 0; i < a.getHeaderList().size() - 1; i++) {
@@ -65,22 +152,22 @@ public class variableElimination {
         Factor f = new Factor(temp + "", x);
 
         // loop for each row - 1
-        for(int rows = 1; rows<f.getTable().get(0).size(); rows++){
+        for (int rows = 1; rows < f.getTable().get(0).size(); rows++) {
             String v = "";
             String p = "";
             // create arraylist copy of the factors and make changes on them
             ArrayList<ArrayList<String>> copya = new ArrayList<>();
-            for(int cola = 0; cola<a.getTable().size(); cola++){
+            for (int cola = 0; cola < a.getTable().size(); cola++) {
                 copya.add(new ArrayList<String>());
                 copya.get(cola).addAll(a.getTable().get(cola));
             }
             ArrayList<ArrayList<String>> copyb = new ArrayList<>();
-            for(int colb = 0; colb<b.getTable().size(); colb++){
+            for (int colb = 0; colb < b.getTable().size(); colb++) {
                 copyb.add(new ArrayList<String>());
                 copyb.get(colb).addAll(b.getTable().get(colb));
             }
             // loop on cols
-            for(int cols = 0; cols<f.getTable().size()-1; cols++) {
+            for (int cols = 0; cols < f.getTable().size() - 1; cols++) {
                 v = f.getTable().get(cols).get(0);
                 p = f.getTable().get(cols).get(rows);
                 for (int i = 0; i < copya.size() - 1; i++) {
@@ -90,7 +177,7 @@ public class variableElimination {
                                 for (int k = 0; k < copya.size(); k++) {
                                     copya.get(k).remove(j);
                                 }
-                                if(j == 0){
+                                if (j == 0) {
                                     j = 0;
                                 }
                                 j--;
@@ -106,7 +193,7 @@ public class variableElimination {
                                 for (int k = 0; k < copyb.size(); k++) {
                                     copyb.get(k).remove(j);
                                 }
-                                if(j == 0){
+                                if (j == 0) {
                                     j = 0;
                                 }
                                 j--;
@@ -116,7 +203,7 @@ public class variableElimination {
 
                 }
             }
-            if(copya.get(0).size()>=2 && copyb.get(0).size()>=2) {
+            if (copya.get(0).size() >= 2 && copyb.get(0).size() >= 2) {
                 String suma = copya.get(copya.size() - 1).get(1);
                 String sumb = copyb.get(copyb.size() - 1).get(1);
                 double totalsum = Double.parseDouble(suma) * Double.parseDouble(sumb);
@@ -128,10 +215,10 @@ public class variableElimination {
         return f;
     }
 
-    public void removeEmpty(Factor f){
-        for(int i = 1; i<f.getTable().get(f.getTable().size()-1).size();i++){
-            if(Objects.equals(f.getTable().get((f.getTable().size() - 1)).get(i), "-")){
-                for(int j = 0; j<f.getTable().size(); j++){
+    public void removeEmpty(Factor f) {
+        for (int i = 1; i < f.getTable().get(f.getTable().size() - 1).size(); i++) {
+            if (Objects.equals(f.getTable().get((f.getTable().size() - 1)).get(i), "-")) {
+                for (int j = 0; j < f.getTable().size(); j++) {
                     f.getTable().get(j).remove(i);
                 }
                 i--;
@@ -140,32 +227,30 @@ public class variableElimination {
     }
 
 
-
-
     // this functions removes booleans that we don't need int factor
-    public void removeBool(){
+    public void removeBool() {
         // first get the question
         String temp = this.qs;
         // find the variables in the question
         int x = temp.indexOf(')');
-        int y = temp.indexOf('|')+1;
+        int y = temp.indexOf('|') + 1;
         temp = temp.substring(y, x);
         // send variables into array
-        String []arr = temp.split(",");
+        String[] arr = temp.split(",");
         // for loop on array variables
-        for (String s : arr){
-            String b = s.charAt(2)+"";
-            String v = s.charAt(0)+"";
+        for (String s : arr) {
+            String b = s.charAt(2) + "";
+            String v = s.charAt(0) + "";
             // for loop on factor list
-            for(Factor f : this.factor_list){
+            for (Factor f : this.factor_list) {
                 // check if the factor contains your variable
-                if(f.getInfo().contains(v)){
+                if (f.getInfo().contains(v)) {
                     // find the row that represents your variable
                     int row = f.getHeaderList().indexOf(v);
-                    for(int i = 1; i<f.getTable().get(row).size(); i++){
+                    for (int i = 1; i < f.getTable().get(row).size(); i++) {
                         // if the bool is not the same as the evidence remove it
-                        if(!Objects.equals(f.getTable().get(row).get(i), b)){
-                            for(int j = 0; j<f.getTable().size(); j++){
+                        if (!Objects.equals(f.getTable().get(row).get(i), b)) {
+                            for (int j = 0; j < f.getTable().size(); j++) {
                                 f.getTable().get(j).remove(i);
 
                             }
@@ -190,14 +275,14 @@ public class variableElimination {
             // get the index of where the brackets end
             int x = h.getInfo().indexOf(')');
             // add the char of the hidden node
-            hidden_nodes.add(h.getInfo().charAt(x-1) + "");
+            hidden_nodes.add(h.getInfo().charAt(x - 1) + "");
         }
         // loop over marked factor list
         for (Factor m : this.marked_list) {
             // get the index of where the brackets close
             int x = m.getInfo().indexOf(')');
             // add the char of the marked node
-            marked_nodes.add(m.getInfo().charAt(x-1) + "");
+            marked_nodes.add(m.getInfo().charAt(x - 1) + "");
         }
         // loop over hidden nodes
         for (String h : hidden_nodes) {
@@ -205,27 +290,26 @@ public class variableElimination {
             if (isRelev(h, map, marked_nodes)) {
                 // if true check dependencies with query;
                 if (MainClass.isDependent(map.get(h), map.get(this.Q.getInfo().charAt(this.Q.getInfo().length() - 2) + ""))
-                 || MainClass.isDependent(map.get(this.Q.getInfo().charAt(this.Q.getInfo().length() - 2) + "" ), map.get(h))){
+                        || MainClass.isDependent(map.get(this.Q.getInfo().charAt(this.Q.getInfo().length() - 2) + ""), map.get(h))) {
                     // if true do nothing
-                }
-                else{
+                } else {
                     // if false for first question remove all factors involved with irrelevant factor h
-                    for(int i = 0; i<this.factor_list.size(); i++) {
-                        for (int j = 0; j < this.factor_list.get(i).getTable().size()-1; j++) {
+                    for (int i = 0; i < this.factor_list.size(); i++) {
+                        for (int j = 0; j < this.factor_list.get(i).getTable().size() - 1; j++) {
                             if (this.factor_list.get(i).getTable().get(j).get(0).equals(h)) {
                                 this.factor_list.remove(this.factor_list.get(i));
-                                if(i == 0)
+                                if (i == 0)
                                     i = 0;
                                 else
                                     i--;
                             }
                         }
                     }
-                    for(int i = 0; i<this.hidden.size(); i++) {
+                    for (int i = 0; i < this.hidden.size(); i++) {
                         for (int j = 0; j < this.hidden.get(i).getTable().size() - 1; j++) {
                             if (this.hidden.get(i).getTable().get(j).get(0).equals(h)) {
                                 this.hidden.remove(this.hidden.get(i));
-                                if(i == 0)
+                                if (i == 0)
                                     i = 0;
                                 else {
                                     i--;
@@ -236,25 +320,24 @@ public class variableElimination {
 
                 }
 
-            }
-            else{
+            } else {
                 // if false for second question remove all factors involved with irrelevant factor h
-                for(int i = 0; i<this.factor_list.size(); i++) {
-                    for (int j = 0; j < this.factor_list.get(i).getTable().size()-1; j++) {
+                for (int i = 0; i < this.factor_list.size(); i++) {
+                    for (int j = 0; j < this.factor_list.get(i).getTable().size() - 1; j++) {
                         if (this.factor_list.get(i).getTable().get(j).get(0).equals(h)) {
                             this.factor_list.remove(this.factor_list.get(i));
-                            if(i == 0)
+                            if (i == 0)
                                 i = 0;
                             else
                                 i--;
                         }
                     }
                 }
-                for(int i = 0; i<this.hidden.size(); i++) {
+                for (int i = 0; i < this.hidden.size(); i++) {
                     for (int j = 0; j < this.hidden.get(i).getTable().size() - 1; j++) {
                         if (this.hidden.get(i).getTable().get(j).get(0).equals(h)) {
                             this.hidden.remove(this.hidden.get(i));
-                            if(i == 0)
+                            if (i == 0)
                                 i = 0;
                             else {
                                 i--;
@@ -265,10 +348,10 @@ public class variableElimination {
             }
 
 
-            }
+        }
 
         // void function changed the factor list as it goes along
-        }
+    }
 
 
     public boolean isRelev(String s, HashMap<String, GraphNode> map, ArrayList<String> marked) {
@@ -278,42 +361,34 @@ public class variableElimination {
         // make arraylist for all parents
 //        ArrayList<GraphNode> p1 = new ArrayList<>();
         // loop through the marked strings
-        for(String ms : marked){
+        for (String ms : marked) {
             // get node of string
             GraphNode temp = map.get(ms);
-             // check if node has parents
-            if(!temp.getParents().isEmpty()) {
+            // check if node has parents
+            if (!temp.getParents().isEmpty()) {
                 // add all his parents to list
                 p.addAll(temp.getParents());
 //                p1.addAll(temp.getParents());
             }
         }
         // loop over parents of query and marked
-        for(int i = 0; i<p.size(); i++) {
+        for (int i = 0; i < p.size(); i++) {
             // add their parents to list
-            if (! p.get(i).getParents().isEmpty()) {
+            if (!p.get(i).getParents().isEmpty()) {
                 p.addAll(p.get(i).getParents());
             }
             // the for loop ends when all of their ancestors are in a list
         }
-            // loop through list
-            for (GraphNode graphNode : p) {
-                // if one of the parents is our node return true
-                if (Objects.equals(s, graphNode.getInfo())){
-                    return true;
-                }
+        // loop through list
+        for (GraphNode graphNode : p) {
+            // if one of the parents is our node return true
+            if (Objects.equals(s, graphNode.getInfo())) {
+                return true;
             }
+        }
         // if none of the parents are our nodes return false
         return false;
     }
-
-
-
-
-
-
-
-
 
 
     // this is a list of all the factors we have
@@ -456,14 +531,20 @@ public class variableElimination {
         String c = "P(J=T|B=T) A-E-M";
         String d = "P(J=T|B=T) M-E-A";
         variableElimination test = new variableElimination(map, a);
-                for(String i : map.keySet()){
+        for (String i : map.keySet()) {
             System.out.println(map.get(i));
         }
         System.out.println(test.getHidden());
         System.out.println();
         test.removeIrel(map);
         test.removeBool();
-        System.out.println(test.getFactor_list());
+        test.joinAll();
+        //  System.out.println(test.getFactor_list());
+//        Factor temp = test.join(test.factor_list.get(1), test.factor_list.get(2));
+//        System.out.println(temp);
+//        Factor temp2 = test.join(temp, test.factor_list.get(3));
+//        System.out.println(temp2);
+        //eliminate(temp2, 'A');
 //        ArrayList<String>s = new ArrayList<>();
 //                s.add("a");
 //                s.add("b");
@@ -482,7 +563,6 @@ public class variableElimination {
 //        for(int i = 0; i<test.getFactor_list().get(0).getHeaderList().size()-1; i++) {
 //            System.out.println(test.getFactor_list().get(0).getHeaderList().get(i));
 //        }
-
 
 
     }
