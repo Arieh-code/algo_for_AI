@@ -48,20 +48,34 @@ public class variableElimination {
 
                 eliminate(prev, ch);
                 factor_list.add(prev);
-                System.out.println("test: " + this.factor_list);
-//            factor_list.add(prev);
-//            factor_list.add(prev);
+            factor_list.removeIf(f -> f.getTable().get(0).size() <= 2);
 
-//
+
+
         }
     }
 
-    private void eliminate(Factor prev, char ch) {
-//        System.out.println(this.getFactor_list());
+    public void normalize(Factor f){
+        this.factor_list.clear();
+        int row = f.getTable().size()-1;
+        double x = Double.parseDouble(f.getTable().get(row).get(1));
+        double y = Double.parseDouble(f.getTable().get(row).get(2));
+        double add = x+y;
+        this.add++;
+        double FT = x/add;
+        double FF = y/add;
+        String roundedFT = String.format("%.5f", FT);
+        String roundedFF = String.format("%.5f", FF);
+        f.getTable().get(row).set(1, roundedFT);
+        f.getTable().get(row).set(2, roundedFF);
+        this.factor_list.add(f);
+    }
+
+    public void eliminate(Factor prev, char ch) {
+
         ArrayList<String> map = new ArrayList<>();
         for (int i = 0; i < prev.getTable().size(); i++) {
             if (Objects.equals(prev.getTable().get(i).get(0), ch + "")) {
-                System.out.println("removed: " + ch);
                 prev.getTable().remove(i);
             }
         }
@@ -101,37 +115,7 @@ public class variableElimination {
         }
     }
 
-//                for (int j = 1; j < size2; j++) {
-//                    String temp = "";
-//                    for (int k = 0; k < size; k++) {
-//                        temp += prev.getTable().get(k).get(j);
-//                    }
-//                    for (int l = j + 1; l < size2; l++) {
-//                        String temp1 = "";
-//                        for (int k = 0; k < prev.getTable().size() - 1; k++) {
-//                            temp1 += prev.getTable().get(k).get(l);
-//                        }
-//                        if (temp1.equals(temp)) {
-//                            double x = Double.parseDouble(prev.getTable().get(prev.getTable().size() - 1).get(l));
-//                            double y = Double.parseDouble(prev.getTable().get(prev.getTable().size() - 1).get(j));
-//                            double add = x + y;
-//                            prev.getTable().get(prev.getTable().size() - 1).set(l, x + y + "");
-//                            this.add++;
-//                            for (int col = 0; col < size + 1; col++) {
-//                                prev.getTable().get(col).remove(l);
-//                            }
-//
-//
-//                        }
-//                    }
-//
-//                }
-//            }
-//
-//        }
-//        this.factor_list.add(prev);
-//
-//    }
+
 
     public Factor join(Factor a, Factor b) {
         HashSet unique_headers = new HashSet();
@@ -289,8 +273,8 @@ public class variableElimination {
             // first if, check if our node is an ancestor of marked or query
             if (isRelev(h, map, marked_nodes)) {
                 // if true check dependencies with query;
-                if (MainClass.isDependent(map.get(h), map.get(this.Q.getInfo().charAt(this.Q.getInfo().length() - 2) + ""))
-                        || MainClass.isDependent(map.get(this.Q.getInfo().charAt(this.Q.getInfo().length() - 2) + ""), map.get(h))) {
+                if (Ex1.isDependent(map.get(h), map.get(this.Q.getInfo().charAt(this.Q.getInfo().length() - 2) + ""))
+                        || Ex1.isDependent(map.get(this.Q.getInfo().charAt(this.Q.getInfo().length() - 2) + ""), map.get(h))) {
                     // if true do nothing
                 } else {
                     // if false for first question remove all factors involved with irrelevant factor h
@@ -395,15 +379,6 @@ public class variableElimination {
     public ArrayList<Factor> make_factor_list(HashMap<String, GraphNode> map) {
         ArrayList<Factor> ans = new ArrayList<>(this.marked_list);
         ans.addAll(this.hidden);
-//        ans.add(this.Q);
-//        int counter = 1;
-//        for (GraphNode gn : map.values()) {
-//            Factor a = new Factor(gn);
-//            a.setInfo(a.getInfo().substring(0, 1) + counter + a.getInfo().substring(1));
-//            ans.add(a);
-//            counter++;
-//
-//        }
         return ans;
     }
 
@@ -445,23 +420,13 @@ public class variableElimination {
         int x = temp.indexOf('(') + 1;
         int y = temp.indexOf('|');
         temp = temp.substring(x, y);
-        /////////////////////// need to remove set hidden and add aftte
-//        map.get("" + temp.charAt(0)).setHidden(false);
-//        map.get("" + temp.charAt(0)).setMarked(temp.charAt(2) == 'T');
         Factor a = new Factor(map.get("" + temp.charAt(0)));
         map.get("" + temp.charAt(0)).setHidden(false);
         return a;
     }
 
 
-//    private String joinInfo(String info, String info1) {
-//        int x = info.indexOf('(')+1;
-//        int y = info.indexOf(')');
-//        String temp = info.substring(x,y);
-//
-//
-//
-//    }
+
 
 
     public int getAdd() {
@@ -520,50 +485,4 @@ public class variableElimination {
         this.marked_list = marked_list;
     }
 
-    public static void main(String[] args) throws FileNotFoundException {
-        String alarm_path = "C:\\Users\\arieh\\IdeaProjects\\algo_for_AI\\src\\Ex1\\alarm_net.xml";
-        String big_net_path = "C:\\Users\\arieh\\IdeaProjects\\algo_for_AI\\src\\Ex1\\big_net.xml";
-        String input_file = "C:\\Users\\arieh\\IdeaProjects\\algo_for_AI\\src\\Ex1\\input.txt";
-        HashMap<String, GraphNode> map = (HashMap<String, GraphNode>) xmlReader.convertToGraph(alarm_path).clone();
-        ArrayList<Factor> tests = new ArrayList<>();
-        String a = "P(B=T|J=T,M=T) A-E";
-        String b = "P(B=T|J=T,M=T) E-A";
-        String c = "P(J=T|B=T) A-E-M";
-        String d = "P(J=T|B=T) M-E-A";
-        variableElimination test = new variableElimination(map, a);
-        for (String i : map.keySet()) {
-            System.out.println(map.get(i));
-        }
-        System.out.println(test.getHidden());
-        System.out.println();
-        test.removeIrel(map);
-        test.removeBool();
-        test.joinAll();
-        //  System.out.println(test.getFactor_list());
-//        Factor temp = test.join(test.factor_list.get(1), test.factor_list.get(2));
-//        System.out.println(temp);
-//        Factor temp2 = test.join(temp, test.factor_list.get(3));
-//        System.out.println(temp2);
-        //eliminate(temp2, 'A');
-//        ArrayList<String>s = new ArrayList<>();
-//                s.add("a");
-//                s.add("b");
-//        System.out.println(s.toString());
-//        s.set(0, "-");
-//        System.out.println(s.toString());
-//        test.removeIrel(map);
-//        test.removeBool();
-//        Factor temp = test.join(test.factor_list.get(1), test.factor_list.get(2));
-//        System.out.println(temp);
-//        System.out.println(map);
-
-//        System.out.println(test.getFactor_list());
-//        System.out.println(test.getFactor_list());
-//        System.out.println();
-//        for(int i = 0; i<test.getFactor_list().get(0).getHeaderList().size()-1; i++) {
-//            System.out.println(test.getFactor_list().get(0).getHeaderList().get(i));
-//        }
-
-
-    }
 }

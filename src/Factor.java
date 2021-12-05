@@ -285,57 +285,6 @@ public class Factor {
         }
     }
 
-    public String toString() {
-        StringBuilder ans = new StringBuilder(""+this.info+"\n");
-        ans.append("ASCII SUM: ").append(this.ASCII_val).append("\nFactor:\n| ");
-        for(int i=0; i<this.table.get(0).size(); i++){
-            for (ArrayList<String> strings : table)
-                ans.append(strings.get(i)).append(" | ");
-            ans.append("\n| ");
-        }
-        return ans.substring(0, ans.length()-2);
-    }
 
-
-
-    public static void main(String[] args) throws FileNotFoundException {
-        String alarm_path = "C:\\Users\\arieh\\IdeaProjects\\algo_for_AI\\src\\Ex1\\alarm_net.xml";
-        String big_net_path = "C:\\Users\\arieh\\IdeaProjects\\algo_for_AI\\src\\Ex1\\big_net.xml";
-        String input_file = "C:\\Users\\arieh\\IdeaProjects\\algo_for_AI\\src\\Ex1\\input.txt";
-        HashMap<String, GraphNode> map = (HashMap<String, GraphNode>) xmlReader.convertToGraph(alarm_path).clone();
-        ArrayList<Factor> tests = new ArrayList<>();
-
-//        int counter = 1;
-//        for (GraphNode gn : map.values()){
-//            Factor a = new Factor(gn);
-//            a.setInfo(a.getInfo().substring(0,1)+counter+a.getInfo().substring(1));
-//            tests.add(a);
-//            counter ++;
-//        }
-
-//        System.out.println(tests);
-        Factor t = new Factor("ABCD", 100);
-        System.out.println(t);
-//        String test = makeNewHeader("ABCD");
-//        ArrayList<String> s = makenew_headerList("A,B,C,D");
-//        System.out.println(s);
-//        map.get("J").setMarked(true);
-//        map.get("J").setHidden(false);
-
-//        System.out.println(map.get("M"));
-//        Factor a = new Factor(map.get("M"));
-//        System.out.println();
-//        System.out.println(a);
-//        map.get("M").setMarked(false);
-//        map.get("M").setHidden(false);
-//        System.out.println();
-//        System.out.println(map.get("M"));
-//        Factor b = new Factor(map.get("M"));
-//        System.out.println(b);
-
-//        char a = map.get("A").getInfo().getChars(0,1);
-//        System.out.println(tests);
-
-    }
 
 }

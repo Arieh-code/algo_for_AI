@@ -198,14 +198,4 @@ public class GraphNode {
         this.visited = visited;
     }
 
-    public String toString(){
-        ArrayList<String> parentList = new ArrayList<>();
-        for(int i=0; i<this.parents.size(); i++)
-            parentList.add(this.parents.get(i).info);
-        ArrayList<String> childList = new ArrayList<>();
-        for(int i=0; i<this.childrens.size(); i++)
-            childList.add(this.childrens.get(i).info);
-        return "Node: "+ this.info+", Evidence: "+this.marked+", HIDDEN: "+this.hidden+", OUTCOME: "+this.boolValue.toString()+", Parent: "+parentList.toString()+
-                ", CHILD: "+childList.toString()+", CPT VALUE: "+cptValue.toString();
-    }
 }
